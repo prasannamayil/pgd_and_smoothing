@@ -24,13 +24,11 @@ def get_args_train():
                         help="Train the entire network or just the classifier")
 
     # Optimizer and scheduler args
+    parser.add_argument("--optimizer", type=str, default='SGD', help='The PGD attack type')
     parser.add_argument("--train_steps", type=int, default=20000, help="number_of_steps_train")
     parser.add_argument("--warmup_steps", type=int, default=500, help='learning rate warm up steps')
     parser.add_argument("--learning_rate", type=float, default=0.03, help='learning rate to train the model')
     parser.add_argument("--num_workers", type=int, default=8, help='number of workers for the data loader')
-    parser.add_argument("--pgd_steps", type=int, default=20, help='number of PGD steps')
-    parser.add_argument("--attack_key", type=str, default='L2PGD', help='The PGD attack type')
-    parser.add_argument("--epsilon", type=float, default=0.0, help='epsilon to attack the model')
     parser.add_argument("--batch_size", type=int, default=128, help='batch size')
     parser.add_argument("--number_of_gpus", type=int, default=8, help='number of GPUs to train the model with')
     parser.add_argument("--sample_size", type=int, default=5000,
@@ -39,6 +37,11 @@ def get_args_train():
     parser.add_argument("--bounds", type=tuple, default=(0, 1), help='bounds for foolbox fmodel')
     parser.add_argument("--weight_decay", type=float, default=0.0, help='weight decay for optim')
     parser.add_argument("--momentum", type=float, default=0.9, help='momentum for optim')
+
+    # Attack args
+    parser.add_argument("--pgd_steps", type=int, default=20, help='number of PGD steps')
+    parser.add_argument("--attack_key", type=str, default='L2PGD', help='The PGD attack type')
+    parser.add_argument("--epsilon", type=float, default=0.0, help='epsilon to attack the model')
 
     # Dataset and segmentation args
     parser.add_argument("--dataset", type=str, default='IMAGENET12',
@@ -157,13 +160,11 @@ def get_args_eval():
                         help="Train the entire network or just the classifier")
 
     # Optimizer and scheduler args
+    parser.add_argument("--optimizer", type=str, default='SGD', help='The PGD attack type')
     parser.add_argument("--train_steps", type=int, default=20000, help="number_of_steps_train")
     parser.add_argument("--warmup_steps", type=int, default=500, help='learning rate warm up steps')
     parser.add_argument("--learning_rate", type=float, default=0.03, help='learning rate to train the model')
     parser.add_argument("--num_workers", type=int, default=8, help='number of workers for the data loader')
-    parser.add_argument("--pgd_steps", type=int, default=20, help='number of PGD steps')
-    parser.add_argument("--attack_key", type=str, default='L2PGD', help='The PGD attack type')
-    parser.add_argument("--epsilon", type=float, default=0.0, help='epsilon to attack the model')
     parser.add_argument("--batch_size", type=int, default=128, help='batch size')
     parser.add_argument("--number_of_gpus", type=int, default=8, help='number of GPUs to train the model with')
     parser.add_argument("--sample_size", type=int, default=5000,
@@ -172,6 +173,11 @@ def get_args_eval():
     parser.add_argument("--bounds", type=tuple, default=(0, 1), help='bounds for foolbox fmodel')
     parser.add_argument("--weight_decay", type=float, default=0.0, help='weight decay for optim')
     parser.add_argument("--momentum", type=float, default=0.9, help='momentum for optim')
+
+    # Attack args
+    parser.add_argument("--pgd_steps", type=int, default=20, help='number of PGD steps')
+    parser.add_argument("--attack_key", type=str, default='L2PGD', help='The PGD attack type')
+    parser.add_argument("--epsilon", type=float, default=0.0, help='epsilon to attack the model')
 
     # Dataset and segmentation args
     parser.add_argument("--dataset", type=str, default='IMAGENET12',
