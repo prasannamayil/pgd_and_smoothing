@@ -28,7 +28,7 @@ def get_args_train():
     parser.add_argument("--train_steps", type=int, default=20000, help="number_of_steps_train")
     parser.add_argument("--warmup_steps", type=int, default=500, help='learning rate warm up steps')
     parser.add_argument("--learning_rate", type=float, default=0.03, help='learning rate to train the model')
-    parser.add_argument("--num_workers", type=int, default=8, help='number of workers for the data loader')
+    parser.add_argument("--num_workers", type=int, default=4, help='number of workers for the data loader')
     parser.add_argument("--batch_size", type=int, default=128, help='batch size')
     parser.add_argument("--number_of_gpus", type=int, default=8, help='number of GPUs to train the model with')
     parser.add_argument("--sample_size", type=int, default=5000,
@@ -46,16 +46,17 @@ def get_args_train():
     # Dataset and segmentation args
     parser.add_argument("--dataset", type=str, default='IMAGENET12',
                         help="the dataset you want to train or test on. Possible args are CIFAR10, IMAGENET12")
-    parser.add_argument("--data_root", type=str,
-                        default='/cluster/project/infk/krause/pmayilvahana/datasets/small_imagenet/',
-                        help="root location of dataset")
+    # parser.add_argument("--data_root", type=str,
+    #                     default='/cluster/project/infk/krause/pmayilvahana/datasets/small_imagenet/',
+    #                     help="root location of dataset")
     parser.add_argument("--val_split_size", type=float, default=0.1, help="split size of validation")
     parser.add_argument("--number_of_segments", type=int, default=100, help="split size of validation")
 
-    # Save directory and colab
+    # Save directory & colab & cluster
     parser.add_argument("--base_directory", type=str, default="/cluster/scratch/pmayilvahana/resnet18_imagenet/",
                         help="directory to save everything")
     parser.add_argument("--colab", type=bool, default=False, help='marker for training on colab')
+    parser.add_argument("--cluster", type=str, default='Euler', help='Euler or Leonhard')
 
     ap = parser.parse_args()
 
@@ -132,6 +133,16 @@ def get_args_train():
     else:
         raise ValueError('dataset = ' + args['dataset'] + ' is not in the list')
 
+    # Getting the data root based on the cluster
+    if args['cluster'] == 'Leonhard':
+        args['data_root'] = '/cluster/project/infk/krause/pmayilvahana/datasets/'+args['dataset']+'/'
+    elif args['cluster'] == 'Euler':
+        args['data_root'] = '/cluster/scratch/pmayilvahana/datasets/'+args['dataset']+'/'
+    else:
+        args['data_root'] = ''
+
+
+
     # number of epochs
     args['num_epochs'] = int(args['train_steps'] // (args['train_size'] / args['batch_size']))
 
@@ -164,7 +175,7 @@ def get_args_eval():
     parser.add_argument("--train_steps", type=int, default=20000, help="number_of_steps_train")
     parser.add_argument("--warmup_steps", type=int, default=500, help='learning rate warm up steps')
     parser.add_argument("--learning_rate", type=float, default=0.03, help='learning rate to train the model')
-    parser.add_argument("--num_workers", type=int, default=8, help='number of workers for the data loader')
+    parser.add_argument("--num_workers", type=int, default=4, help='number of workers for the data loader')
     parser.add_argument("--batch_size", type=int, default=128, help='batch size')
     parser.add_argument("--number_of_gpus", type=int, default=8, help='number of GPUs to train the model with')
     parser.add_argument("--sample_size", type=int, default=5000,
@@ -182,9 +193,9 @@ def get_args_eval():
     # Dataset and segmentation args
     parser.add_argument("--dataset", type=str, default='IMAGENET12',
                         help="the dataset you want to train or test on. Possible args are CIFAR10, IMAGENET12")
-    parser.add_argument("--data_root", type=str,
-                        default='/cluster/project/infk/krause/pmayilvahana/datasets/small_imagenet/',
-                        help="root location of dataset")
+    # parser.add_argument("--data_root", type=str,
+    #                     default='/cluster/project/infk/krause/pmayilvahana/datasets/small_imagenet/',
+    #                     help="root location of dataset")
     parser.add_argument("--val_split_size", type=float, default=0.1, help="split size of validation")
     parser.add_argument("--number_of_segments", type=int, default=100, help="split size of validation")
 
@@ -194,6 +205,7 @@ def get_args_eval():
     parser.add_argument("--base_directory_weights", type=str, default="/cluster/scratch/pmayilvahana/resnet18_imagenet/",
                         help="directory with weights")
     parser.add_argument("--colab", type=bool, default=False, help='marker for training on colab')
+    parser.add_argument("--cluster", type=str, default='Euler', help='Euler or Leonhard')
 
     # eval.py arguments
 
@@ -246,6 +258,14 @@ def get_args_eval():
         args['eps_stack_L2PGD'] = [0.0, 1.0, 2.0, 4.0, 5.0, 6.0, 7.0, 8.0, 10.0]
         args['eps_stack_LinfPGD'] = [0.0, 0.002, 0.004, 0.006, 0.008, 0.009, 0.01, 0.03, 0.05]
         args['eps_stack_FGSM'] = [0.0, 0.002, 0.004, 0.006, 0.008, 0.009, 0.01, 0.03, 0.05]
+
+    # Getting the data root based on the cluster
+    if args['cluster'] == 'Leonhard':
+        args['data_root'] = '/cluster/project/infk/krause/pmayilvahana/datasets/'+args['dataset']+'/'
+    elif args['cluster'] == 'Euler':
+        args['data_root'] = '/cluster/scratch/pmayilvahana/datasets/'+args['dataset']+'/'
+    else:
+        args['data_root'] = ''
 
     # Make parent directory if it doesn't exits
     if not os.path.exists(args['base_directory']) and args['colab'] is False:
