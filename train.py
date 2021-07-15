@@ -62,8 +62,6 @@ def one_epoch(data_loader, net, device, criterion, optimizer, is_train, args, **
             labels = labels.to(device)
             net.x_segs = images_segs
 
-
-
         # Finding adversaries for that particular epsilon
         if eps != 0.0 and train_type is not 'segmenter':
             net.eval()
