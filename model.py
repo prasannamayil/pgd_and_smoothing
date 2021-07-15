@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision.models as models
 import numpy as np
+from utils import *
 
 def get_model(args):
     """ Returns the model we want to train on

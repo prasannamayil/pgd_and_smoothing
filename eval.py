@@ -241,7 +241,7 @@ def main(args):
             adversaries_images[a_key][key], normal_images_dict[a_key][key], logit_images[a_key][key], \
             correct_labels[a_key][key], input_grad_norms_stack[a_key][key], input_grad_stack[a_key][key], \
             logit_advs[a_key][key], advs_success_failures[a_key][key] = eval(d_loader, net, device, criterion, \
-                                                                             optimizer, eps_stack, attack, fmodel)
+                                                                             optimizer, eps_stack, attack=attack, fmodel=fmodel)
 
             save_eval_dictionaries(args['directory'], vulnerabilities, accuracies_adversaries, adversaries_images,
                                    normal_images_dict, adv_norm_grads,

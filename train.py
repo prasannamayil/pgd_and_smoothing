@@ -185,7 +185,7 @@ def main(args):
 
         # Train model on train set for an epoch
         avg_vulnerabilities, avg_adv_loss, avg_adv_accuracy, avg_input_grad_norm, avg_adv_grad_norm \
-            = one_epoch(tr_loader, net, device, criterion, optimizer, True, args, fmodel, attack)
+            = one_epoch(tr_loader, net, device, criterion, optimizer, True, args, fmodel=fmodel, attack=attack)
 
         vulnerabilities['tr_epoch'].append(avg_vulnerabilities)
         losses_adversaries['tr_epoch'].append(avg_adv_loss)
@@ -199,7 +199,7 @@ def main(args):
 
         # Validation stats for a small sample size
         avg_vulnerabilities, avg_adv_loss, avg_adv_accuracy, avg_input_grad_norm, avg_adv_grad_norm \
-            = one_epoch(va_loader, net, device, criterion, optimizer, False, args, fmodel, attack)
+            = one_epoch(va_loader, net, device, criterion, optimizer, False, args, fmodel=fmodel, attack=attack)
 
         vulnerabilities['va_epoch'].append(avg_vulnerabilities)
         losses_adversaries['va_epoch'].append(avg_adv_loss)
@@ -210,7 +210,7 @@ def main(args):
 
         # Test stats for a small sample size
         avg_vulnerabilities, avg_adv_loss, avg_adv_accuracy, avg_input_grad_norm, avg_adv_grad_norm \
-            = one_epoch(te_loader, net, device, criterion, optimizer, False, args, fmodel, attack)
+            = one_epoch(te_loader, net, device, criterion, optimizer, False, args, fmodel=fmodel, attack=attack)
 
         vulnerabilities['te_epoch'].append(avg_vulnerabilities)
         losses_adversaries['te_epoch'].append(avg_adv_loss)
