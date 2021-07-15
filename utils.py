@@ -53,8 +53,9 @@ import copy
 
 # Function that smooths images based on segments (rewrite efficiently later)
 
-def avg_seg(image,segs, size = args['image_size']):
-    image = np.transpose(np.copy(image.numpy()), (1, 2, 0))
+def avg_seg(image,segs):
+    image = np.transpose(np.copy(image),(1,2,0))
+    size = image.shape[0]
     sums = {}
     ns = {}
     for x in range(size):
@@ -69,7 +70,7 @@ def avg_seg(image,segs, size = args['image_size']):
         for y in range(size):
             zone = segs[x][y]
             image[x][y] = sums[zone]/ns[zone]
-    return torch.tensor(np.transpose(image, (2, 0, 1)))
+    return torch.tensor(np.transpose(image,(2,0,1)))
 
 # Function that I created. Does what batch_seg does but for single image.It is used by square circle dataset
 def singleSeg(img, nsegs, seg):
@@ -78,7 +79,7 @@ def singleSeg(img, nsegs, seg):
 
 # Segments a batch of images and returns a smoothed version
 def batchSeg(images,nsegs,seg):
-    tab = [avg_seg(img.cpu(),seg(img.cpu(),nsegs)) for img in images]
+    tab = [avg_seg(img.cpu(), seg(img.cpu(), nsegs)) for img in images]
     return torch.stack(tab)
 
 # SLIC function to segment image
@@ -232,8 +233,7 @@ def init_eval_stat_dictionaries(eval_attack_keys, eval_data_keys):
 # Function to save all eval statistics
 
 def save_eval_dictionaries(directory, vulnerabilities, accuracies_adversaries, adversaries_images, normal_images_dict, adv_norm_grads, \
-                           logit_images, correct_labels, input_grad_norms_stack, input_grad_stack, logit_advs, advs_success_failures, \
-                           wts_change_dict, wts_q_norm, wts_k_norm):
+                           logit_images, correct_labels, input_grad_norms_stack, input_grad_stack, logit_advs, advs_success_failures):
   with open(directory+'vulnerabilities.pickle', 'wb') as handle:
       pickle.dump(vulnerabilities, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -268,3 +268,39 @@ def save_eval_dictionaries(directory, vulnerabilities, accuracies_adversaries, a
     pickle.dump(advs_success_failures, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+## SLIC function to segment image
+
+def return_segments(images, nsegs, segmenter='slic', **kwargs):
+    ''' Takes in a image tensor batch of type cpu and outputs a
+    tensor batch of segmented images. We use two segmenters: slic,
+    and felzenszwalb (needs to be written).
+    '''
+    images_segments = []
+    for image in images:
+        image = image.detach().numpy().astype('double').transpose(1, 2, 0)
+
+        if segmenter is 'slic':
+            compactness = kwargs.pop('compactness', 10.0)
+            max_iter = kwargs.pop('max_num_iter', 10)
+            images_segments.append(
+                torch.tensor(slic(image, n_segments=nsegs, compactness=compactness, max_iter=max_iter)))
+
+        else:
+            raise ValueError(f"Only slic available at this moment")
+
+    return torch.stack(images_segments)
+
+## Check: If there's some sort of device mismatch
+
+def smooth_images(x,x_segs):
+    ''' Takes unsmoothed image, and its segments as input and
+    returns smoothed image. Requires presegmented images to be stored.
+    '''
+    y = torch.zeros_like(x)
+    for obs in range(len(x)):
+        size = y.shape[-1]
+        segs = x_segs[obs, :].detach().numpy()
+        for seg in np.unique(segs):
+            locs = (segs == seg).nonzero()
+            y[obs, :, locs[0], locs[1]] = x[obs, :, locs[0], locs[1]].mean(-1).unsqueeze(1)
+    return y
