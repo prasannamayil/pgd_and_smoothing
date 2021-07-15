@@ -9,11 +9,6 @@ from skimage.segmentation import slic, felzenszwalb ## Felzenszwalb also added
 import torch
 import collections
 
-from torch import nn
-from functools import partial
-from torch.utils import model_zoo
-from torch.nn import functional as F
-
 ## PGD imports
 
 import sys
@@ -23,33 +18,17 @@ import numpy as np
 from PIL import Image
 import json
 import torch
-import torchvision
-import torchvision.transforms as transforms
-import torch.nn.functional as F
-import torch.nn as nn
-import torch.optim as optim
-from torch.utils.data.sampler import SubsetRandomSampler
-from torch.utils.data import Dataset, DataLoader, TensorDataset
-import torchvision.models as models
 
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
-from math import sqrt, log2
 from skimage import color
-from skimage.segmentation import slic
+from skimage.segmentation import slic, felzenszwalb
 
 from time import time
-from shutil import copyfile
 import sys
-import argparse
-
-import matplotlib.pyplot as plt
 import numpy as np
 import pickle
-from time import time
-import foolbox as fb
-import copy
 
 # Function that smooths images based on segments (rewrite efficiently later)
 
@@ -290,15 +269,12 @@ def return_segments(images, nsegs, segmenter='slic', **kwargs):
 
     return torch.stack(images_segments)
 
-## Check: If there's some sort of device mismatch
-
 def smooth_images(x,x_segs):
     ''' Takes unsmoothed image, and its segments as input and
     returns smoothed image. Requires presegmented images to be stored.
     '''
     y = torch.zeros_like(x)
     for obs in range(len(x)):
-        size = y.shape[-1]
         segs = x_segs[obs, :].detach().numpy()
         for seg in np.unique(segs):
             locs = (segs == seg).nonzero()
