@@ -17,7 +17,7 @@ def get_args_train():
     parser.add_argument("--train_type", type=str, default='pgd',
                         help="Training type: pgd, segmenter, pgd_and_segmenter")
     parser.add_argument("--model_name", type=str, default='resnet18',
-                        help="what model to train.  Possible args are resnet18, resnet152, efficientnet_b4")
+                        help="what model to train.  Possible args are resnet18, resnet152, efficientnet")
     parser.add_argument("--pretrained", type=bool, default=False,
                         help="Use pretrained weights")
     parser.add_argument("--train_all_params", type=bool, default=True,
@@ -50,7 +50,7 @@ def get_args_train():
     #                     default='/cluster/project/infk/krause/pmayilvahana/datasets/small_imagenet/',
     #                     help="root location of dataset")
     parser.add_argument("--val_split_size", type=float, default=0.1, help="split size of validation")
-    parser.add_argument("--number_of_segments", type=int, default=100, help="split size of validation")
+    parser.add_argument("--number_of_segments", type=int, default=224*224, help="split size of validation")
 
     # Save directory & colab & cluster
     parser.add_argument("--base_directory", type=str, default="/cluster/scratch/pmayilvahana/resnet18_imagenet/",
@@ -133,13 +133,17 @@ def get_args_train():
     else:
         raise ValueError('dataset = ' + args['dataset'] + ' is not in the list')
 
+    # Set mode for data.py
+    args['mode'] = 'train'
+
     # Getting the data root based on the cluster
-    if args['cluster'] == 'Leonhard':
+    if args['cluster'] == 'leonhard':
         args['data_root'] = '/cluster/project/infk/krause/pmayilvahana/datasets/'+args['dataset']+'/'
-    elif args['cluster'] == 'Euler':
+    elif args['cluster'] == 'euler':
         args['data_root'] = '/cluster/scratch/pmayilvahana/datasets/'+args['dataset']+'/'
     else:
         args['data_root'] = ''
+
 
 
 
@@ -197,7 +201,7 @@ def get_args_eval():
     #                     default='/cluster/project/infk/krause/pmayilvahana/datasets/small_imagenet/',
     #                     help="root location of dataset")
     parser.add_argument("--val_split_size", type=float, default=0.1, help="split size of validation")
-    parser.add_argument("--number_of_segments", type=int, default=100, help="split size of validation")
+    parser.add_argument("--number_of_segments", type=int, default=224*224, help="split size of validation")
 
     # Save directory and colab
     parser.add_argument("--base_directory", type=str, default="/cluster/scratch/pmayilvahana/resnet18_imagenet/",
@@ -205,7 +209,7 @@ def get_args_eval():
     parser.add_argument("--base_directory_weights", type=str, default="/cluster/scratch/pmayilvahana/resnet18_imagenet/",
                         help="directory with weights")
     parser.add_argument("--colab", type=bool, default=False, help='marker for training on colab')
-    parser.add_argument("--cluster", type=str, default='Euler', help='Euler or Leonhard')
+    parser.add_argument("--cluster", type=str, default='euler', help='Euler or Leonhard')
 
     # eval.py arguments
 
@@ -260,9 +264,9 @@ def get_args_eval():
         args['eps_stack_FGSM'] = [0.0, 0.002, 0.004, 0.006, 0.008, 0.009, 0.01, 0.03, 0.05]
 
     # Getting the data root based on the cluster
-    if args['cluster'] == 'Leonhard':
+    if args['cluster'] == 'leonhard':
         args['data_root'] = '/cluster/project/infk/krause/pmayilvahana/datasets/'+args['dataset']+'/'
-    elif args['cluster'] == 'Euler':
+    elif args['cluster'] == 'euler':
         args['data_root'] = '/cluster/scratch/pmayilvahana/datasets/'+args['dataset']+'/'
     else:
         args['data_root'] = ''
@@ -312,6 +316,9 @@ def get_args_eval():
 
     # Getting save length to save images and gradients
     args['save_length'] = args['num_images'] // args['batch_size']
+
+    # Set mode for data.py
+    args['mode'] = 'eval'
 
     # Save args
     if args['colab'] is False:

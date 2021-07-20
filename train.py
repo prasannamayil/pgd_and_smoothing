@@ -49,10 +49,10 @@ def one_epoch(data_loader, net, device, criterion, optimizer, is_train, args, **
     for i, data in enumerate(data_loader):
 
         # Break out of the function if we exceed the given sample_size and it is not train
-        if is_train is not True and total_images >= sample_size:
+        if is_train != True and total_images >= sample_size:
             break
 
-        if train_type is not 'pgd_and_segmenter':
+        if train_type != 'pgd_and_segmenter':
             images, labels = data
             images = images.to(device)
             labels = labels.to(device)
@@ -63,7 +63,7 @@ def one_epoch(data_loader, net, device, criterion, optimizer, is_train, args, **
             net.x_segs = images_segs
 
         # Finding adversaries for that particular epsilon
-        if eps != 0.0 and train_type is not 'segmenter':
+        if eps != 0.0 and train_type != 'segmenter':
             net.eval()
             _, [input], temp_success = attack(fmodel, images, labels, epsilons=[eps])
             optimizer.zero_grad()
@@ -87,7 +87,7 @@ def one_epoch(data_loader, net, device, criterion, optimizer, is_train, args, **
 
 
         # Losses, Accuracies, and Grad norms of adversarial images at each batch
-        if eps != 0.0 and train_type is not 'segmenter':
+        if eps != 0.0 and train_type != 'segmenter':
             avg_vulnerabilities += temp_success.sum().item() # total vulnerable images
         else:
             avg_vulnerabilities += temp_success # Hear vuln is meaningless as there is no attack

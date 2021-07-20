@@ -258,7 +258,7 @@ def return_segments(images, nsegs, segmenter='slic', **kwargs):
     for image in images:
         image = image.detach().numpy().astype('double').transpose(1, 2, 0)
 
-        if segmenter is 'slic':
+        if segmenter=='slic':
             compactness = kwargs.pop('compactness', 10.0)
             max_iter = kwargs.pop('max_num_iter', 10)
             images_segments.append(

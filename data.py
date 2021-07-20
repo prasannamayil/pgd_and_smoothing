@@ -111,11 +111,11 @@ def dataloader_IMAGENET12(args):
 
     transform_val = transform_test
 
-    if mode is 'eval':
+    if mode=='eval':
         transform_train = transform_test
 
     # if max number of segments then even if train_type is 'segmenter' or 'pgd_and..' then execute first if.
-    if train_type is 'pgd' or number_of_segments is int(224*224):
+    if train_type=='pgd' or number_of_segments==int(224*224):
         trainset = datasets.ImageFolder(root + 'train/', transform=transform_train)
         valset = datasets.ImageFolder(root + 'train/', transform=transform_val)
         testset = datasets.ImageFolder(root + 'val/', transform=transform_test)
@@ -141,10 +141,10 @@ def dataloader_IMAGENET12(args):
         te_loader = DataLoader(testset, batch_size=batch_size,
                                shuffle=False, num_workers=num_workers)
 
-    elif train_type is 'segmenter':
-        if mode is 'train':
+    elif train_type=='segmenter':
+        if mode=='train':
             filename_phrase = "_"
-        elif mode is 'eval':
+        elif mode=='eval':
             filename_phrase = "_bulk_"
         trainset = FileDataset(root + str(number_of_segments) + filename_phrase + "tr.pt", transform_train, seed_transform)
         valset = FileDataset(root + str(number_of_segments) + filename_phrase + "va.pt", transform_valid, seed_transform)
@@ -154,7 +154,7 @@ def dataloader_IMAGENET12(args):
         va_loader = DataLoader(valset, batch_size=batch_size, shuffle=True)
         te_loader = DataLoader(testset, batch_size=batch_size, shuffle=False)
 
-    elif train_type is 'pgd_and_segmenter' and number_of_segments:
+    elif train_type=='pgd_and_segmenter' and number_of_segments:
         trainset = FileDataset(root + str(number_of_segments) + "_bulk_tr.pt", transform_train, seed_transform)
         valset = FileDataset(root + str(number_of_segments) + "_bulk_va.pt", transform_valid, seed_transform)
         testset = FileDataset(root + str(number_of_segments) + "_bulk_te.pt", transform_test, seed_transform)
